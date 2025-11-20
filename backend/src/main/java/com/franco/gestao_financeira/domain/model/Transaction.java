@@ -17,7 +17,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "financial_transaction") // Atenção ao nome da tabela!
+@Table(name = "financial_transaction")
 public class Transaction {
 
     @Id

@@ -1,5 +1,6 @@
 package com.franco.gestao_financeira.domain.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -17,7 +18,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "reserve")
-public class Reserve {
+public class Reserve implements Serializable{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,10 +86,6 @@ public class Reserve {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((name == null) ? 0 : name.hashCode());
-        result = prime * result + ((targetAmount == null) ? 0 : targetAmount.hashCode());
-        result = prime * result + ((deadline == null) ? 0 : deadline.hashCode());
-        result = prime * result + ((members == null) ? 0 : members.hashCode());
         return result;
     }
 
@@ -106,26 +103,8 @@ public class Reserve {
                 return false;
         } else if (!id.equals(other.id))
             return false;
-        if (name == null) {
-            if (other.name != null)
-                return false;
-        } else if (!name.equals(other.name))
-            return false;
-        if (targetAmount == null) {
-            if (other.targetAmount != null)
-                return false;
-        } else if (!targetAmount.equals(other.targetAmount))
-            return false;
-        if (deadline == null) {
-            if (other.deadline != null)
-                return false;
-        } else if (!deadline.equals(other.deadline))
-            return false;
-        if (members == null) {
-            if (other.members != null)
-                return false;
-        } else if (!members.equals(other.members))
-            return false;
         return true;
     }
+
+    
 }

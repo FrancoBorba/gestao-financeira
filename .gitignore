@@ -1,0 +1,33 @@
+# --- MAVEN ---
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# --- IDEs (IntelliJ, Eclipse, VS Code) ---
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+bin/
+
+# --- SPRING BOOT & SEGREDOS ---
+# Ignora os arquivos reais de configuração (pois contêm senhas)
+src/main/resources/application.yml
+src/main/resources/application.properties
+src/test/resources/application.yml
+src/test/resources/application.properties
+
+# --- LOGS ---
+logs/
+*.log
+
+# --- SISTEMA OPERACIONAL ---
+.DS_Store
+Thumbs.db
+
+# --- RELATÓRIOS ESPECÍFICOS (Caso gerados fora da target) ---
+jacoco.exec
+*.html

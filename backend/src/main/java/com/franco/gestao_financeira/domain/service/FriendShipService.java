@@ -24,9 +24,13 @@ public class FriendShipService {
 
 
     @Transactional
-    public Friendship sendFriendRequest(Long requesterId, long receiverId) {
+    public Friendship sendFriendRequest(Long requesterId, String nickname) {
+
+        User reciverUser = userRepository.findByNickname(nickname).orElseThrow(
+            () -> new BusinessRuleException("User with nickname " + nickname + "not found")
+        );
         
-        if (requesterId.equals(receiverId)) {
+        if (requesterId.equals(reciverUser.getId())) {
             throw new BusinessRuleException("You may not friendship request to your self");
         }
 
@@ -34,12 +38,8 @@ public class FriendShipService {
            () -> new RuntimeException("User with id " + requesterId + "not found")
         );
 
-        
-        User receiverUser = userRepository.findById(receiverId).orElseThrow(
-           () -> new RuntimeException("User with id " + receiverId+ "not found")
-        );
 
-        Optional<Friendship> existing = friendshipRepository.findByRequesterAndReceiver(requesterUser, receiverUser);
+        Optional<Friendship> existing = friendshipRepository.findByRequesterAndReceiver(requesterUser, reciverUser);
 
         if (existing.isPresent()) {
             Friendship friendship = existing.get();
@@ -52,7 +52,7 @@ public class FriendShipService {
 
         Friendship newFriendship = new Friendship();
         newFriendship.setRequester(requesterUser);
-        newFriendship.setReceiver(receiverUser);
+        newFriendship.setReceiver(reciverUser);
         newFriendship.setStatusFriendship(StatusFriendship.PENDING);
 
         return friendshipRepository.save(newFriendship);

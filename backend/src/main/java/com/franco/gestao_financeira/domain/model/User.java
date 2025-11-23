@@ -34,10 +34,13 @@ public class User implements Serializable {
     private Integer cycleStartDay = 1; // Has day 1 with default
 
     
-    public User(Long id, String name, @Email String email, Integer cycleStartDay) {
+  
+
+    public User(Long id, String name, @Email String email, String nickname, Integer cycleStartDay) {
         this.id = id;
         this.name = name;
         this.email = email;
+        this.nickname = nickname;
         this.cycleStartDay = cycleStartDay;
     }
 
@@ -72,7 +75,7 @@ public class User implements Serializable {
     public void setCycleStartDay(Integer cycleStartDay) {
         this.cycleStartDay = cycleStartDay;
     }
-    
+
    public String getNickname() {
         return nickname;
     }

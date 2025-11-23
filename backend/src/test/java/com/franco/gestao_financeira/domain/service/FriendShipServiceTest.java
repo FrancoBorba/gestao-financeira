@@ -46,8 +46,8 @@ public class FriendShipServiceTest {
 
     @BeforeEach
     public void setUp() {
-        franco = new User(1L , "Franco" , "franco.borba@email.com" , 1);
-        mariana = new User(2L , "Mariana" , "mariana@email,com",15);
+        franco = new User(1L , "Franco Borba" , "franco.borba@email.com" , "franco" , 1);
+        mariana = new User(2L , "Mariana Azevedo" , "mariana@email,com", "mariana",15);
     }
 
     @Test
@@ -55,7 +55,9 @@ public class FriendShipServiceTest {
      // Arrange
 
      when(userRepository.findById(1L)).thenReturn(Optional.of(franco));
-     when(userRepository.findById(2L)).thenReturn(Optional.of(mariana));
+
+    // when(userRepository.findById(2L)).thenReturn(Optional.of(mariana));
+    when(userRepository.findByNickname("mariana")).thenReturn(Optional.of(mariana));
      when(friendshipRepository.findByRequesterAndReceiver(franco, mariana)).thenReturn(Optional.empty());
 
      // Simulates saving by returning the object with PENDING status
@@ -69,7 +71,7 @@ public class FriendShipServiceTest {
 
      // Act
 
-     Friendship invite = friendShipService.sendFriendRequest(1L , 2L);
+     Friendship invite = friendShipService.sendFriendRequest(1L , mariana.getNickname());
    
      // Assert
 
@@ -83,12 +85,12 @@ public class FriendShipServiceTest {
     @Test
     void shouldThrowExceptionWhenSenderIsSameAsReceiver() {
 
-      // Arrange
-     Long francoID = franco.getId();
+        when(userRepository.findByNickname(franco.getNickname())).thenReturn(Optional.of(franco));
+
 
      // Act ; Assert
      Exception exception = assertThrows(BusinessRuleException.class, 
-      () -> { friendShipService.sendFriendRequest(francoID, francoID);
+      () -> { friendShipService.sendFriendRequest(franco.getId(), franco.getNickname());
 
   });
 
@@ -103,7 +105,9 @@ public class FriendShipServiceTest {
 void shouldThrowExceptionWhenFriendshipIsAlreadyAccepted() {
     // ARRANGE
     when(userRepository.findById(franco.getId())).thenReturn(Optional.of(franco));
-    when(userRepository.findById(mariana.getId())).thenReturn(Optional.of(mariana));
+   // when(userRepository.findById(mariana.getId())).thenReturn(Optional.of(mariana));
+
+    when(userRepository.findByNickname("mariana")).thenReturn(Optional.of(mariana));
 
     // Create the object with status acceptd
     Friendship friendshipExists = new Friendship();
@@ -115,9 +119,9 @@ void shouldThrowExceptionWhenFriendshipIsAlreadyAccepted() {
     when(friendshipRepository.findByRequesterAndReceiver(franco, mariana))
             .thenReturn(Optional.of(friendshipExists));
 
-    // 2. ACT & ASSERT
+    //  ACT & ASSERT
     Exception exception = assertThrows(BusinessRuleException.class, () -> {
-        friendShipService.sendFriendRequest(franco.getId(), mariana.getId());
+        friendShipService.sendFriendRequest(franco.getId(), mariana.getNickname());
     });
 
 
@@ -126,11 +130,12 @@ void shouldThrowExceptionWhenFriendshipIsAlreadyAccepted() {
 
 @Test
 void shouldThrowExceptionWhenRequestIsPending() {
-    // 1. ARRANGE
+    //  ARRANGE
     when(userRepository.findById(franco.getId())).thenReturn(Optional.of(franco));
-    when(userRepository.findById(mariana.getId())).thenReturn(Optional.of(mariana));
+    //when(userRepository.findById(mariana.getId())).thenReturn(Optional.of(mariana));
+    when(userRepository.findByNickname("mariana")).thenReturn(Optional.of(mariana));
 
-    // Cria o objeto simulado com status PENDENTE
+    
     Friendship pendindInvitation = new Friendship();
     pendindInvitation.setRequester(franco);
     pendindInvitation.setReceiver(mariana);
@@ -142,7 +147,7 @@ void shouldThrowExceptionWhenRequestIsPending() {
 
     //  ACT & ASSERT
     Exception exception = assertThrows(BusinessRuleException.class, () -> {
-        friendShipService.sendFriendRequest(franco.getId(), mariana.getId());
+        friendShipService.sendFriendRequest(franco.getId(), mariana.getNickname());
     });
 
     assertEquals("There is already a pending request", exception.getMessage());

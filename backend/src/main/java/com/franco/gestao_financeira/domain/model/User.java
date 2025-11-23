@@ -36,6 +36,9 @@ public class User implements Serializable {
     
   
 
+    public User() {
+    }
+
     public User(Long id, String name, @Email String email, String nickname, Integer cycleStartDay) {
         this.id = id;
         this.name = name;

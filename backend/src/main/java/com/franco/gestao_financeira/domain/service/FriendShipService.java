@@ -3,6 +3,7 @@ package com.franco.gestao_financeira.domain.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.franco.gestao_financeira.domain.exception.BusinessRuleException;
 import com.franco.gestao_financeira.domain.model.Friendship;
@@ -13,6 +14,7 @@ import com.franco.gestao_financeira.infrastructure.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
+@Service
 public class FriendShipService {
 
     @Autowired

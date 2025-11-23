@@ -1,0 +1,17 @@
+com/franco/gestao_financeira/domain/model/MonthlyCategory.class
+com/franco/gestao_financeira/domain/model/Transaction.class
+com/franco/gestao_financeira/domain/model/BaseCategory.class
+com/franco/gestao_financeira/domain/model/Enums/StatusFriendship.class
+com/franco/gestao_financeira/domain/model/Enums/TransactionType.class
+com/franco/gestao_financeira/domain/exception/BusinessRuleException.class
+com/franco/gestao_financeira/infrastructure/repository/BaseCategoryRepository.class
+com/franco/gestao_financeira/domain/model/User.class
+com/franco/gestao_financeira/infrastructure/repository/TransactionRepository.class
+com/franco/gestao_financeira/infrastructure/repository/FriendshipRepository.class
+com/franco/gestao_financeira/domain/model/Friendship.class
+com/franco/gestao_financeira/infrastructure/repository/UserRepository.class
+com/franco/gestao_financeira/domain/service/FriendShipService.class
+com/franco/gestao_financeira/infrastructure/repository/ReserveRepository.class
+com/franco/gestao_financeira/infrastructure/repository/MonthlyCategoryRepository.class
+com/franco/gestao_financeira/GestaoFinanceiraApplication.class
+com/franco/gestao_financeira/domain/model/Reserve.class

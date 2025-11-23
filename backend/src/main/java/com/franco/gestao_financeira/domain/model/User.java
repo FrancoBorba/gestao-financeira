@@ -25,6 +25,11 @@ public class User implements Serializable {
     @Email
     private String email;
 
+    @Column(name = "nickname" , nullable = false , length = 100)
+    private String nickname;
+
+ 
+
     @Column(name = "cycle_start_day")
     private Integer cycleStartDay = 1; // Has day 1 with default
 
@@ -67,7 +72,14 @@ public class User implements Serializable {
     public void setCycleStartDay(Integer cycleStartDay) {
         this.cycleStartDay = cycleStartDay;
     }
+    
+   public String getNickname() {
+        return nickname;
+    }
 
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
     @Override
     public int hashCode() {
         final int prime = 31;

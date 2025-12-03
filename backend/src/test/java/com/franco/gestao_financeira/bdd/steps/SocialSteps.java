@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.franco.gestao_financeira.domain.model.Friendship;
 import com.franco.gestao_financeira.domain.model.User;
-import com.franco.gestao_financeira.domain.model.Enums.StatusFriendship;
-import com.franco.gestao_financeira.domain.service.FriendShipService;
+import com.franco.gestao_financeira.domain.model.Enums.FriendshipStatus;
+import com.franco.gestao_financeira.domain.service.FriendshipService;
 import com.franco.gestao_financeira.infrastructure.repository.FriendshipRepository;
 import com.franco.gestao_financeira.infrastructure.repository.UserRepository;
 
@@ -18,7 +18,7 @@ import io.cucumber.java.pt.Quando;
 
 public class SocialSteps {
 
-    @Autowired private FriendShipService friendshipService;
+    @Autowired private FriendshipService friendshipService;
     @Autowired private UserRepository userRepository;
     @Autowired private FriendshipRepository friendshipRepository;
 
@@ -66,8 +66,7 @@ public class SocialSteps {
         Friendship f = new Friendship();
         f.setRequester(franco);
         f.setReceiver(maria);
-        // Convertendo a String do Gherkin para o seu Enum
-        f.setStatusFriendship(StatusFriendship.valueOf(statusStr)); 
+        f.setStatusFriendship(FriendshipStatus.valueOf(statusStr)); 
         friendshipRepository.save(f);
     }
 
@@ -77,7 +76,7 @@ public class SocialSteps {
         Friendship f = new Friendship();
         f.setRequester(franco);
         f.setReceiver(maria);
-        f.setStatusFriendship(StatusFriendship.valueOf(statusStr)); 
+        f.setStatusFriendship(FriendshipStatus.valueOf(statusStr)); 
         friendshipRepository.save(f);
     }
 
@@ -127,7 +126,7 @@ public class SocialSteps {
     @Então("o status da amizade deve ser {string}")
     public void verificarStatus(String statusEsperado) {
         Friendship f = friendshipRepository.findAll().get(0);
-        Assertions.assertEquals(StatusFriendship.valueOf(statusEsperado), f.getStatusFriendship());
+        Assertions.assertEquals(FriendshipStatus.valueOf(statusEsperado), f.getStatusFriendship());
     }
 
     @Então("o sistema deve bloquear a solicitação de amizade")
@@ -147,6 +146,6 @@ public class SocialSteps {
     public void verificarMudancaDeStatus(String statusEsperado) {
         // Lógica idêntica ao "verificarStatus", mas com a frase nova
         Friendship f = friendshipRepository.findAll().get(0);
-        Assertions.assertEquals(StatusFriendship.valueOf(statusEsperado), f.getStatusFriendship());
+        Assertions.assertEquals(FriendshipStatus.valueOf(statusEsperado), f.getStatusFriendship());
     }
 }

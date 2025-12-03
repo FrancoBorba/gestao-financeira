@@ -1,9 +1,11 @@
 package com.franco.gestao_financeira.domain.model;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
-import com.franco.gestao_financeira.domain.model.Enums.StatusFriendship;
+import org.hibernate.annotations.CreationTimestamp;
+
+import com.franco.gestao_financeira.domain.model.Enums.FriendshipStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,32 +16,57 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "friendship")
-public class Friendship implements Serializable{
-    
+@Table(name = "friendship", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"requester_id", "receiver_id"})
+})
+public class Friendship {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
+    // QUEM ENVIOU O PEDIDO
     @ManyToOne
-    @JoinColumn(name = "requester_id" , nullable = false)
-    private User requester; 
+    @JoinColumn(name = "requester_id", nullable = false)
+    private User requester;
 
+    // QUEM RECEBEU O PEDIDO
     @ManyToOne
-    @JoinColumn(name = "receiver_id" , nullable = false)
+    @JoinColumn(name = "receiver_id", nullable = false)
     private User receiver;
 
-
+    // STATUS (PENDING, ACCEPTED, REJECTED)
     @Enumerated(EnumType.STRING)
-    @Column(name = "status" , nullable = false)
-    private StatusFriendship statusFriendship;
+    @Column(name = "status", nullable = false)
+    private FriendshipStatus statusFriendship;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    // DATA DE CRIAÇÃO (Automática)
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
+
+    // DATA DE ATUALIZAÇÃO
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+ 
+
+    public Friendship() {
+    }
+
+    public Friendship(Long id, User requester, User receiver, FriendshipStatus statusFriendship, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.requester = requester;
+        this.receiver = receiver;
+        this.statusFriendship = statusFriendship;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 
     public Long getId() {
         return id;
@@ -65,11 +92,11 @@ public class Friendship implements Serializable{
         this.receiver = receiver;
     }
 
-    public StatusFriendship getStatusFriendship() {
+    public FriendshipStatus getStatusFriendship() {
         return statusFriendship;
     }
 
-    public void setStatusFriendship(StatusFriendship statusFriendship) {
+    public void setStatusFriendship(FriendshipStatus statusFriendship) {
         this.statusFriendship = statusFriendship;
     }
 
@@ -81,28 +108,45 @@ public class Friendship implements Serializable{
         this.createdAt = createdAt;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+
     @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((id == null) ? 0 : id.hashCode());
-        return result;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Friendship that = (Friendship) o;
+        // Se o ID for null, as entidades não são iguais a menos que sejam o mesmo objeto em memória
+        return id != null && Objects.equals(id, that.id);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        Friendship other = (Friendship) obj;
-        if (id == null) {
-            if (other.id != null)
-                return false;
-        } else if (!id.equals(other.id))
-            return false;
-        return true;
+    public int hashCode() {
+        // HashCode constante para evitar problemas com Hibernate Lazy Loading
+        return getClass().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Friendship{" +
+                "id=" + id +
+                ", requester=" + (requester != null ? requester.getName() : "null") +
+                ", receiver=" + (receiver != null ? receiver.getName() : "null") +
+                ", status=" + statusFriendship +
+                '}';
+    }
+
 }

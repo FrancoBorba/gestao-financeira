@@ -32,6 +32,14 @@ public class BaseCategory implements Serializable{
     @Column(name = "is_active")
     private Boolean isActive = true;
 
+    public BaseCategory(Long categoryId, User franco, String string, String string2, boolean b) {
+        //TODO Auto-generated constructor stub
+    }
+
+    public BaseCategory() {
+        //TODO Auto-generated constructor stub
+    }
+
     public Long getId() {
         return id;
     }

@@ -12,4 +12,6 @@ import com.franco.gestao_financeira.domain.model.User;
 public interface BaseCategoryRepository extends JpaRepository<BaseCategory, Long> {
     // Buscar todas as categorias base de um usuário
     List<BaseCategory> findByUser(User user);
+
+    Boolean existsByNameAndUser(String string, User franco);
 }

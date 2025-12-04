@@ -29,6 +29,7 @@ public class SocialSteps {
 
     // --- CONTEXTO (PREPARAÇÃO DO BANCO) ---
 
+    
     @Dado("que existem os usuários {string} e {string} cadastrados")
     public void criarUsuariosIniciais(String nome1, String nome2) {
         // Limpar banco para evitar dados de testes anteriores

@@ -1,61 +1,93 @@
 package com.franco.gestao_financeira.bdd.steps;
 
+import com.franco.gestao_financeira.application.dto.CategoryDTO;
+import com.franco.gestao_financeira.domain.model.User;
+import com.franco.gestao_financeira.domain.service.CategoryService;
+import com.franco.gestao_financeira.infrastructure.repository.BaseCategoryRepository;
+import com.franco.gestao_financeira.infrastructure.repository.UserRepository;
 import io.cucumber.java.pt.*;
 import org.junit.jupiter.api.Assertions;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class PlanningSteps {
 
-    // injetar quando for implementar
-    // @Autowired private PlanningService planningService;
-    // @Autowired private BaseCategoryRepository baseCategoryRepository;
+    @Autowired private CategoryService categoryService;
+    @Autowired private UserRepository userRepository;
+    @Autowired private BaseCategoryRepository baseCategoryRepository;
 
-    private Long userId = 1L;
-    
-    private Exception exceptionCapturada; // Para testar os erros
+    private User usuarioLogado;
+    private Exception exceptionCapturada;
 
-    // --- FEATURE 1: BASE ---
+    // ========================================================================
+    // CONTEXTO (PREPARAÇÃO)
+    // ========================================================================
+
+    @Dado("que eu sou um usuário cadastrado com nome {string}")
+    public void setupUsuario(String nome) {
+        // Limpa o banco para garantir teste isolado
+        baseCategoryRepository.deleteAll();
+        userRepository.deleteAll();
+
+        // Cria o usuário real no H2
+        usuarioLogado = new User(null, nome, "teste@email.com", nome.toLowerCase() + ".dev", 1);
+        usuarioLogado = userRepository.save(usuarioLogado);
+    }
+
+  
+
     @Dado("que eu não tenho a categoria {string} cadastrada")
-    public void garantirCategoriaInexistente(String nome) {
-        // TODO: Deletar do banco se existir
+    public void garantirInexistencia(String nomeCategoria) {
+        boolean existe = baseCategoryRepository.existsByNameAndUser(nomeCategoria, usuarioLogado);
+        Assertions.assertFalse(existe, "A categoria não deveria existir antes do teste!");
     }
 
     @Quando("eu cadastro uma nova categoria base com nome {string} e cor {string}")
-    public void cadastrarCategoriaBase(String nome, String cor) {
-        // TODO: Chamar repository.save(new BaseCategory(...))
-    }
-
-    // --- FEATURE 2, 3 e 4: PLANEJAMENTO ---
-    @Dado("que minhas categorias padrão são {string} e {string}")
-    public void setupCategoriasPadrao(String cat1, String cat2) {
-        // TODO: Criar e salvar categorias base
-    }
-    
-    @Dado("que o usuário configurou o {string} para o dia {int}")
-    public void configurarCiclo(String config, Integer dia) {
-        // TODO: Atualizar o User com o dia do ciclo
-    }
-
-    @Quando("eu inicio o planejamento para {string}")
-    public void iniciarPlanejamento(String mesAno) {
-        // TODO: Chamar service.startMonthPlanning(...)
-    }
-    
-    @Quando("eu adiciono uma categoria extra {string} com valor de R$ {double}")
-    public void adicionarSazonal(String nome, Double valor) {
-        // TODO: Chamar service.addSeasonalCategory(...)
-    }
-
-    @Quando("tento definir o valor de R$ {double} para a categoria {string}")
-    public void tentarDefinirOrcamento(Double valor, String categoria) {
+    public void cadastrarCategoria(String nome, String cor) {
         try {
-            // TODO: Chamar service.updateBudget(...)
+            CategoryDTO dto = new CategoryDTO(nome, cor);
+            // Chama o Service Real de Categoria
+            categoryService.createCategory(usuarioLogado.getId(), dto);
         } catch (Exception e) {
-            this.exceptionCapturada = e; // Captura o erro para validar no passo "Então"
+            this.exceptionCapturada = e; // Captura erro se houver
         }
     }
 
-    @Então("o sistema deve bloquear a operação")
-    public void verificarBloqueio() {
-        Assertions.assertNotNull(exceptionCapturada, "Deveria ter dado erro, mas não deu!");
+    @Então("essa categoria deve estar disponível para ser usada")
+    public void verificarCategoriaSalva() {
+        // Verifica se salvou 1 registro
+        Assertions.assertEquals(1, baseCategoryRepository.count());
+        // Garante que não deu erro
+        Assertions.assertNull(exceptionCapturada, "Não deveria ter dado erro!");
     }
+
+
+    @Dado("que eu já possuo a categoria {string} cadastrada")
+    public void setupCategoriaExistente(String nome) {
+        // Pré-condição: Criamos a categoria usando o SERVICE para simular que já existe
+        try {
+            CategoryDTO dto = new CategoryDTO(nome, "#FFFFFF");
+            categoryService.createCategory(usuarioLogado.getId(), dto);
+        } catch (Exception e) {
+            Assertions.fail("Erro ao preparar cenário: " + e.getMessage());
+        }
+    }
+
+    @Quando("eu tento cadastrar uma nova categoria com nome {string} e cor {string}")
+    public void tentarCadastrarCategoria(String nome, String cor) {
+        // Reutiliza o método de cadastro que já tem o bloco try/catch
+        cadastrarCategoria(nome, cor);
+    }
+
+    @Então("o sistema deve bloquear a operação de categoria")
+    public void verificarBloqueioCategoria() {
+        Assertions.assertNotNull(exceptionCapturada, "O sistema deveria ter bloqueado, mas deixou passar!");
+    }
+
+    @Então("deve exibir a mensagem de erro de planejamento: {string}")
+    public void verificarMensagemErroPlanejamento(String msgEsperada) {
+        String msgReal = exceptionCapturada.getMessage();
+        
+        Assertions.assertTrue(msgReal.toLowerCase().contains(msgEsperada.toLowerCase()),
+                "Mensagem incorreta! Esperava conter: '" + msgEsperada + "' mas veio: '" + msgReal + "'");
+    }  
 }

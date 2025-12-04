@@ -7,6 +7,13 @@ import com.franco.gestao_financeira.domain.model.BaseCategory;
 import com.franco.gestao_financeira.domain.model.User;
 import com.franco.gestao_financeira.infrastructure.repository.BaseCategoryRepository;
 import com.franco.gestao_financeira.infrastructure.repository.UserRepository;
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +23,9 @@ public class CategoryService {
     private final BaseCategoryRepository baseRepository;
     private final UserRepository userRepository;
 
+
+    private final Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
     public CategoryService(BaseCategoryRepository baseRepository, UserRepository userRepository) {
         this.baseRepository = baseRepository;
         this.userRepository = userRepository;
@@ -24,6 +34,7 @@ public class CategoryService {
 
     @Transactional
     public BaseCategory createCategory(Long userId, CategoryDTO dto) {
+        validateDTO(dto);
         User user = findUserById(userId);
         
         validateDuplicateName(dto.name(), user);
@@ -35,6 +46,7 @@ public class CategoryService {
 
     @Transactional
     public BaseCategory updateCategory(Long userId, Long categoryId, CategoryDTO dto) {
+        validateDTO(dto);
         User user = findUserById(userId);
         BaseCategory category = findCategoryById(categoryId);
 
@@ -98,5 +110,14 @@ public class CategoryService {
     private void updateCategoryFields(BaseCategory category, CategoryDTO dto) {
         category.setName(dto.name());
         category.setColorHex(dto.colorHex());
+    }
+
+    private void validateDTO(CategoryDTO dto) {
+        Set<ConstraintViolation<CategoryDTO>> violations = validator.validate(dto);
+        if (!violations.isEmpty()) {
+            // Pega a primeira mensagem de erro (ex: "Formato de cor inválido") e lança
+            String msg = violations.iterator().next().getMessage();
+            throw new BusinessRuleException(msg);
+        }
     }
 }

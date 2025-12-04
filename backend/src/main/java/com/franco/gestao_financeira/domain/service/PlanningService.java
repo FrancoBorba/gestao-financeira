@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.franco.gestao_financeira.domain.exception.BusinessRuleException;
 import com.franco.gestao_financeira.infrastructure.repository.BaseCategoryRepository;
 
-
 @Service
 public class PlanningService {
 
@@ -31,7 +30,7 @@ public class PlanningService {
         if ("CategoriaBaseInexistente".equals(categoria)) {
             lookupId = 99L;
         } else {
-            lookupId = 1l;
+            lookupId = 1L;
         }
 
         boolean baseExists = baseCategoryRepository.findById(lookupId).isPresent();

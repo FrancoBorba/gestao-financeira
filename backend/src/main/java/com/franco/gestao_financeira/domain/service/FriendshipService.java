@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.franco.gestao_financeira.application.dto.FriendRequestDTO;
 import com.franco.gestao_financeira.application.dto.FriendshipResponseDTO;
@@ -19,6 +20,7 @@ import com.franco.gestao_financeira.infrastructure.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
+@Service
 public class FriendshipService {
 
     @Autowired
@@ -104,7 +106,7 @@ public class FriendshipService {
         if (existing.isPresent()) {
             Friendship f = existing.get();
             if (f.getStatusFriendship() == FriendshipStatus.ACCEPTED) {
-                throw new BusinessRuleException("Vocês já são amigos");
+                throw new BusinessRuleException("You already friend");
             } else if (f.getStatusFriendship() == FriendshipStatus.PENDING) {
                 throw new BusinessRuleException("Já existe uma solicitação pendente");
             }

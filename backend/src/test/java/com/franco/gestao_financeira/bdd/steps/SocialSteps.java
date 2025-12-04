@@ -5,6 +5,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.franco.gestao_financeira.application.dto.FriendRequestDTO;
 import com.franco.gestao_financeira.domain.model.Friendship;
 import com.franco.gestao_financeira.domain.model.User;
 import com.franco.gestao_financeira.domain.model.Enums.FriendshipStatus;
@@ -87,15 +88,17 @@ public class SocialSteps {
     public void enviarPedido(String nomeRemetente, String nomeDestinatario) {
         try {
        
-            // Passamos o ID do Franco e o NICKNAME da Maria
-            // O Gherkin diz "Maria", mas o sistema usa "maria.fin" que criamos no setup
+            FriendRequestDTO dto;
             
             if (nomeRemetente.equalsIgnoreCase(franco.getName())) {
-                friendshipService.sendFriendRequest(franco.getId(), maria.getNickname());
+                dto = new FriendRequestDTO(franco.getId(), maria.getNickname());
             } else {
-                // Caso inverso (se precisarmos testar Maria pedindo pra Franco)
-                friendshipService.sendFriendRequest(maria.getId(), franco.getNickname());
+            
+                dto = new FriendRequestDTO(maria.getId(), franco.getNickname());
+
             }
+
+            friendshipService.sendFriendRequest(dto);
             
         } catch (Exception e) {
             this.exceptionCapturada = e;
